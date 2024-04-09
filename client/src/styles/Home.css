@@ -1,0 +1,13 @@
+.btn-custom {
+  height: 30vh;
+  width: 50vw;
+  opacity: 0.95;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+@media only screen and (max-width: 768px) {
+  .btn-custom {
+    height: 20vh;
+    width: 75vw;
+  }
+}

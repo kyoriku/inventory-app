@@ -1,0 +1,62 @@
+/* .half-width-input {
+  width: 50px;
+  display: inline-block
+} */
+
+/* .flex-container {
+  display: flex;
+  justify-content: space-between;
+} */
+
+.btn,
+table {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+body {
+  background-color: #f9fbfd;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+.background {
+  background-image: url(../assets/images/eastbound.jpg);
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  height: calc(100vh - 56px);
+}
+
+.title-card {
+  width: fit-content;
+  padding: 4px 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 8px;
+}
+
+.search {
+  width: 300px;
+}
+
+tbody tr:last-child td~td {
+  padding: 4px;
+}
+
+tbody tr:last-child td {
+  padding: 4px;
+}
+
+.selected-row td {
+  padding: 4px;
+}
