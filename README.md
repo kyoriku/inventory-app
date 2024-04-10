@@ -6,6 +6,7 @@
 [![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)](https://expressjs.com/)
 [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://react.dev/)
 [![Node.JS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/en)
+[![JWT](https://img.shields.io/badge/JSON%20Web%20Tokens-000000.svg?style=for-the-badge&logo=JSON-Web-Tokens&logoColor=white)](https://jwt.io/)
 
 ## Description
 This web app aims to streamline inventory management processes for a restaurant by transitioning from traditional manual inventory tracking methods to a digital solution. Built using the MERN stack (MongoDB, Express, React, Node), the app will provide secure authentication using JWT, ensuring that only authorized employees can access the system.

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { formatDate } from '../utils/formatDate'; // Importing the formatDate function
+
+import { formatDate, formatDateDisplay } from '../utils/formatDate';
 import { getMe } from '../utils/API';
 import Auth from '../utils/auth';
+
+import AddFryerEntryModal from '../components/FryerModal';
+
 import '../styles/styles.css';
 import '../styles/Input.css';
 
@@ -9,6 +13,15 @@ const FryerStation = () => {
   const [userData, setUserData] = useState({});
   const [inventory, setInventory] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [showModal, setShowModal] = useState(false);
+  const [newItem, setNewItem] = useState({
+    date: formatDate(Date.now()),
+    chickenThighs: { onLine: '', frozen: '' },
+    chickenKarage: { onLine: '', frozen: '' },
+    chickenWings: '',
+    hotDogs: { onLine: '', frozen: '' },
+    vegDogs: { onLine: '', frozen: '' }
+  });
 
   const userDataLength = Object.keys(userData).length;
 
@@ -96,6 +109,7 @@ const FryerStation = () => {
         hotDogs: { onLine: '', frozen: '' },
         vegDogs: { onLine: '', frozen: '' }
       });
+      handleCloseModal();
     } catch (error) {
       console.error('Error adding new item:', error);
     }
@@ -109,13 +123,13 @@ const FryerStation = () => {
     setCurrentMonth(prevMonth => (prevMonth + 1) % 12);
   };
 
-  if (!userDataLength) {
-    return (
-      <div className='d-flex justify-content-center mt-5'>
-        <div className='spinner'></div>
-      </div>
-    );
-  }
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
 
   return (
     <div className='pt-2 background d-flex flex-column '>
@@ -124,7 +138,7 @@ const FryerStation = () => {
       </div>
       <div className="d-flex justify-content-between">
         <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
-        <button className='btn btn-success' onClick={handleSubmit}>Add</button>
+        <button className='btn btn-success' onClick={handleShowModal}>Add</button>
         <button className='btn btn-primary' onClick={handleNextMonth}>Next Month &#8594;</button>
       </div>
       <div className='mt-2'>
@@ -142,7 +156,7 @@ const FryerStation = () => {
               .filter(item => new Date(item.date).getMonth() === currentMonth)
               .slice().reverse().map(item => (
                 <tr key={item._id}>
-                  <td className='table-secondary border-dark border-bottom'>{item.date}</td>
+                  <td className='table-secondary border-dark border-bottom'>{formatDateDisplay(item.date)}</td>
                   <td>
                     <div>
                       <div className='border-bottom'>Chicken Thighs</div>
@@ -175,6 +189,13 @@ const FryerStation = () => {
           </tbody>
         </table>
       </div>
+      <AddFryerEntryModal
+        showModal={showModal}
+        handleCloseModal={handleCloseModal}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        newItem={newItem}
+      />
     </div>
   );
 };
