@@ -1,10 +1,17 @@
+// Importing React and necessary hooks
 import React, { useState, useEffect } from 'react';
-import { formatDate } from '../utils/formatDate';
+
+// Importing utility functions
 import { getMe } from '../utils/API';
 import Auth from '../utils/auth';
-import '../styles/styles.css';
+import { formatDate, formatDateDisplay } from '../utils/formatDate';
+
+// Importing components
 import LoadingSpinner from '../components/LoadingSpinner';
 import SearchBar from '../components/SearchBar';
+
+// Importing the styles for the page
+import '../styles/styles.css';
 
 const GrillStation = () => {
   const [userData, setUserData] = useState({});
@@ -135,11 +142,11 @@ const GrillStation = () => {
       <div className='d-flex justify-content-center'>
         <h2 className='text-center card title-card bg-secondary text-light'>Grill</h2>
       </div>
-      <div className='mx-1 mb-1'>
+      <div className='mx-2'>
         <div className='d-flex justify-content-center mb-2'>
-        <SearchBar value={searchQuery} onChange={handleSearchChange} />
+          <SearchBar value={searchQuery} onChange={handleSearchChange} />
         </div>
-        <table className='table table-bordered border-dark table-hover box'>
+        <table className='table table-bordered border-dark table-hover box m-0'>
           <thead>
             <tr className='table-dark'>
               <th className='align-top' style={{ width: '10%' }}>Date</th>
@@ -169,7 +176,7 @@ const GrillStation = () => {
           <tbody>
             {filteredInventory.map(item => (
               <tr key={item._id}>
-                <td className='table-secondary border-dark'>{item.date}</td>
+                <td className='table-secondary border-dark'>{formatDateDisplay(item.date)}</td>
                 <td>{item.burgers.onLine} / {item.burgers.frozen}</td>
                 <td>{item.clubChicken.onLine} / {item.clubChicken.frozen}</td>
                 <td>{item.beerCanChicken.onLine} / {item.beerCanChicken.frozen}</td>
@@ -186,7 +193,7 @@ const GrillStation = () => {
                 <input
                   type="text"
                   name="date"
-                  value={newItem.date}
+                  value={formatDateDisplay(newItem.date)}
                   onChange={handleChange}
                   style={{ width: '10vw' }}
                   className="form-control"
@@ -318,7 +325,7 @@ const GrillStation = () => {
           </tbody>
         </table>
       </div>
-      <div className="text-center mt-3">
+      <div className="text-center mt-2">
         <button className='btn btn-success btn-lg' onClick={handleSubmit}>Save</button>
       </div>
     </div>

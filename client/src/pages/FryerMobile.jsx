@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import { formatDate, formatDateDisplay } from '../utils/formatDate';
-import { getMe } from '../utils/API';
+import { getMe, getFryerData, saveFryerData } from '../utils/API';
 import Auth from '../utils/auth';
+import { formatDate, formatDateDisplay } from '../utils/formatDate';
 
+import LoadingSpinner from '../components/LoadingSpinner';
 import AddFryerEntryModal from '../components/FryerModal';
 
 import '../styles/styles.css';
@@ -13,6 +14,7 @@ const FryerStation = () => {
   const [userData, setUserData] = useState({});
   const [inventory, setInventory] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showModal, setShowModal] = useState(false);
   const [newItem, setNewItem] = useState({
     date: formatDate(Date.now()),
@@ -25,10 +27,12 @@ const FryerStation = () => {
 
   const userDataLength = Object.keys(userData).length;
 
+  const getToken = () => Auth.loggedIn() ? Auth.getToken() : null;
+
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const token = Auth.loggedIn() ? Auth.getToken() : null;
+        const token = getToken();
 
         if (!token) {
           return false;
@@ -53,10 +57,8 @@ const FryerStation = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await fetch('/api/fryer');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        const response = await getFryerData();
+
         const data = await response.json();
         setInventory(data);
       } catch (error) {
@@ -88,17 +90,19 @@ const FryerStation = () => {
   };
 
   const handleSubmit = async () => {
+    const token = getToken();
+
+    if (!token) {
+      return false;
+    }
+
     try {
-      const response = await fetch('/api/fryer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newItem)
-      });
+      const response = await saveFryerData(newItem);
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
+
       const data = await response.json();
       setInventory([...inventory, data]);
       setNewItem({
@@ -109,18 +113,54 @@ const FryerStation = () => {
         hotDogs: { onLine: '', frozen: '' },
         vegDogs: { onLine: '', frozen: '' }
       });
+
       handleCloseModal();
     } catch (error) {
       console.error('Error adding new item:', error);
     }
   };
 
+  const filteredInventory = inventory.filter(item => {
+    const itemMonth = new Date(item.date).getMonth();
+    const itemDate = item.date.toLowerCase();
+    const itemYear = new Date(item.date).getFullYear();
+    return itemYear === currentYear && itemMonth === currentMonth && itemDate;
+  });
+
   const handlePreviousMonth = () => {
-    setCurrentMonth(prevMonth => (prevMonth - 1 + 12) % 12);
+    setCurrentMonth(prevMonth => {
+      const newMonth = (prevMonth - 1 + 12) % 12;
+      const newYear = newMonth === 11 ? currentYear - 1 : currentYear;
+      setCurrentYear(newYear);
+      return newMonth;
+    });
+    setSearchQuery('');
+    setIsEditMode(false);
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(prevMonth => (prevMonth + 1) % 12);
+    const nextMonth = (currentMonth + 1) % 12;
+    const nextYear = nextMonth === 0 ? currentYear + 1 : currentYear;
+
+    const currentDate = new Date();
+
+    if (nextYear > currentDate.getFullYear() || (nextYear === currentDate.getFullYear() && nextMonth > currentDate.getMonth())) {
+      return;
+    }
+
+    setCurrentMonth(nextMonth);
+    setCurrentYear(nextYear);
+    setSearchQuery('');
+    setIsEditMode(false);
+  };
+
+  const isNextMonthDisabled = () => {
+    const nextMonth = (currentMonth + 1) % 12;
+    const nextYear = nextMonth === 0 ? currentYear + 1 : currentYear;
+
+    const currentDate = new Date();
+
+    return nextYear > currentDate.getFullYear() || (nextYear === currentDate.getFullYear() && nextMonth > currentDate.getMonth());
   };
 
   const handleCloseModal = () => {
@@ -131,63 +171,71 @@ const FryerStation = () => {
     setShowModal(true);
   };
 
+  if (!userDataLength) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <div className='pt-2 background d-flex flex-column '>
       <div className='d-flex justify-content-center'>
         <h2 className='text-center card title-card bg-primary text-light'>Fryer</h2>
       </div>
-      <div className="d-flex justify-content-between">
-        <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
-        <button className='btn btn-success' onClick={handleShowModal}>Add</button>
-        <button className='btn btn-primary' onClick={handleNextMonth}>Next Month &#8594;</button>
-      </div>
-      <div className='mt-2'>
-        <table className='table table-bordered table-hover border-dark'>
-          <thead>
-            <tr className='table-dark'>
-              <th scope='col'>Date</th>
-              <th scope='col'>Product</th>
-              <th scope='col' >On Line</th>
-              <th scope='col'>Frozen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inventory
-              .filter(item => new Date(item.date).getMonth() === currentMonth)
-              .slice().reverse().map(item => (
-                <tr key={item._id}>
-                  <td className='table-secondary border-dark border-bottom'>{formatDateDisplay(item.date)}</td>
-                  <td>
-                    <div>
-                      <div className='border-bottom'>Chicken Thighs</div>
-                      <div className='border-bottom'>Chicken Karage</div>
-                      <div className='border-bottom'>Chicken Wings</div>
-                      <div className='border-bottom'>Hot Dogs</div>
-                      <div>Veggie Dogs</div>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      <div className='border-bottom'>{item.chickenThighs.onLine}</div>
-                      <div className='border-bottom'>{item.chickenKarage.onLine}</div>
-                      <div className='border-bottom'>{item.chickenWings}</div>
-                      <div className='border-bottom'>{item.hotDogs.onLine}</div>
-                      <div>{item.vegDogs.onLine}</div>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      <div className='border-bottom'>{item.chickenThighs.frozen}</div>
-                      <div className='border-bottom'>{item.chickenKarage.frozen}</div>
-                      <div className='border-bottom'><br></br></div>
-                      <div className='border-bottom'>{item.hotDogs.frozen}</div>
-                      <div>{item.vegDogs.frozen}</div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+      <div className='mx-2'>
+
+        <div className="d-flex justify-content-between">
+          <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
+          <button className='btn btn-success' onClick={handleShowModal}>Add</button>
+          <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8594;</button>
+        </div>
+        <div className='mt-2'>
+          <table className='table table-bordered table-hover border-dark'>
+            <thead>
+              <tr className='table-dark'>
+                <th scope='col'>Date</th>
+                <th scope='col'>Product</th>
+                <th scope='col' >On Line</th>
+                <th scope='col'>Frozen</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredInventory
+                .slice().reverse().map(item => (
+                  <React.Fragment key={item._id}>
+                    <tr className='first-row'>
+                      <td className='first-row'>{formatDateDisplay(item.date)}</td>
+                      <td className='border-end'>Chicken Thighs</td>
+                      <td className='border-end'>{item.chickenThighs.onLine}</td>
+                      <td>{item.chickenThighs.frozen}</td>
+                    </tr>
+                    <tr className='first-row'>
+                      <td className='border-top'></td>
+                      <td className='border-top border-end'>Chicken Karage</td>
+                      <td className='border-top border-end'>{item.chickenKarage.onLine}</td>
+                      <td className='border-top'>{item.chickenKarage.frozen}</td>
+                    </tr>
+                    <tr className='first-row'>
+                      <td className='border-top'></td>
+                      <td className='border-top border-end'>Chicken Wings</td>
+                      <td className='border-top border-end'>{item.chickenWings}</td>
+                      <td className='border-top'></td>
+                    </tr>
+                    <tr className='first-row'>
+                      <td className='border-top'></td>
+                      <td className='border-top border-end'>Hot Dogs</td>
+                      <td className='border-top border-end'>{item.hotDogs.onLine}</td>
+                      <td className='border-top'>{item.hotDogs.frozen}</td>
+                    </tr>
+                    <tr className='first-row'>
+                      <td className='border-top'></td>
+                      <td className='border-top border-end'>Veggie Dogs</td>
+                      <td className='border-top border-end'>{item.vegDogs.onLine}</td>
+                      <td className='border-top'>{item.vegDogs.frozen}</td>
+                    </tr>
+                  </React.Fragment>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <AddFryerEntryModal
         showModal={showModal}

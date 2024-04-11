@@ -455,8 +455,8 @@ const FryerStation = () => {
       </div>
       {isEditMode ? (
         <div className="text-center m-2">
-          <button className='btn btn-success btn-lg me-1 mb-3' onClick={handleSaveOrUpdate}>Update</button>
-          <button className='btn btn-danger btn-lg ms-1 mb-3' onClick={handleCancelEdit}>Cancel</button>
+          <button className='btn btn-danger btn-lg me-1 mb-3' onClick={handleCancelEdit}>Cancel</button>
+          <button className='btn btn-success btn-lg ms-1 mb-3' onClick={handleSaveOrUpdate}>Update</button>
         </div>
       ) : (
         <div className="text-center m-2">

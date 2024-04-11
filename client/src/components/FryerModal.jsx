@@ -148,9 +148,9 @@ const AddFryerEntryModal = ({ showModal, handleCloseModal, handleChange, handleS
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-        <Button variant="primary" onClick={handleSubmit}>Save</Button>
+      <Modal.Footer className='justify-content-between'>
+        <Button variant="danger" onClick={handleCloseModal}>Cancel</Button>
+        <Button variant="success" onClick={handleSubmit}>Save</Button>
       </Modal.Footer>
     </Modal>
   );

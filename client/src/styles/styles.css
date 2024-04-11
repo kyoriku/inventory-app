@@ -60,3 +60,8 @@ tbody tr:last-child td {
 .selected-row td {
   padding: 4px;
 }
+
+.first-row td:first-child {
+  /* background-color: #dee2e6; */
+  background-color: #e2e3e5;
+}
