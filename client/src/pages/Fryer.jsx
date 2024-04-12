@@ -379,6 +379,7 @@ const FryerStation = () => {
                   value={newItem.chickenThighs.onLine}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='OL'
                 />
                 <span> / </span>
                 <input
@@ -387,6 +388,7 @@ const FryerStation = () => {
                   value={newItem.chickenThighs.frozen}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='F'
                 />
               </td>
               <td>
@@ -396,6 +398,7 @@ const FryerStation = () => {
                   value={newItem.chickenKarage.onLine}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='OL'
                 />
                 <span> / </span>
                 <input
@@ -404,6 +407,7 @@ const FryerStation = () => {
                   value={newItem.chickenKarage.frozen}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='F'
                 />
               </td>
               <td>
@@ -422,6 +426,7 @@ const FryerStation = () => {
                   value={newItem.hotDogs.onLine}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='OL'
                 />
                 <span> / </span>
                 <input
@@ -430,6 +435,7 @@ const FryerStation = () => {
                   value={newItem.hotDogs.frozen}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='F'
                 />
               </td>
               <td>
@@ -439,6 +445,7 @@ const FryerStation = () => {
                   value={newItem.vegDogs.onLine}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='OL'
                 />
                 <span> / </span>
                 <input
@@ -447,6 +454,7 @@ const FryerStation = () => {
                   value={newItem.vegDogs.frozen}
                   onChange={handleChange}
                   className="form-control half-width-input"
+                  placeholder='F'
                 />
               </td>
             </tr>

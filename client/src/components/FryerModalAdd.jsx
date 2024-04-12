@@ -6,7 +6,7 @@ const AddFryerEntryModal = ({ showModal, handleCloseModal, handleChange, handleS
   return (
     <Modal show={showModal} onHide={handleCloseModal} className='mt-5'>
       <Modal.Header closeButton>
-        <Modal.Title>Add New Entry</Modal.Title>
+        <Modal.Title className='ms-auto'>Add</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>

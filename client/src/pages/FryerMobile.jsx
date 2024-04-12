@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { getMe, getFryerData, saveFryerData } from '../utils/API';
+import { getMe, getFryerData, saveFryerData, updateFryerData } from '../utils/API';
 import Auth from '../utils/auth';
 import { formatDate, formatDateDisplay } from '../utils/formatDate';
 
 import LoadingSpinner from '../components/LoadingSpinner';
-import AddFryerEntryModal from '../components/FryerModal';
+import AddFryerEntryModal from '../components/FryerModalAdd';
+import EditFryerEntryModal from '../components/FryerModalEdit';
 
 import '../styles/styles.css';
 import '../styles/Input.css';
@@ -16,6 +17,7 @@ const FryerStation = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [newItem, setNewItem] = useState({
     date: formatDate(Date.now()),
     chickenThighs: { onLine: '', frozen: '' },
@@ -24,6 +26,14 @@ const FryerStation = () => {
     hotDogs: { onLine: '', frozen: '' },
     vegDogs: { onLine: '', frozen: '' }
   });
+
+  const filteredInventory = inventory.filter(item => {
+    const itemMonth = new Date(item.date).getMonth();
+    const itemYear = new Date(item.date).getFullYear();
+    return itemYear === currentYear && itemMonth === currentMonth
+  });
+
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const userDataLength = Object.keys(userData).length;
 
@@ -69,12 +79,12 @@ const FryerStation = () => {
     fetchInventory();
   }, [currentMonth]);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e, setStateFunction) => {
     const { name, value } = e.target;
 
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-      setNewItem(prevState => ({
+      setStateFunction(prevState => ({
         ...prevState,
         [parent]: {
           ...prevState[parent],
@@ -82,11 +92,19 @@ const FryerStation = () => {
         }
       }));
     } else {
-      setNewItem(prevState => ({
+      setStateFunction(prevState => ({
         ...prevState,
         [name]: value
       }));
     }
+  };
+
+  const handleChange = (e) => {
+    handleInputChange(e, setNewItem);
+  };
+
+  const handleEditChange = (e) => {
+    handleInputChange(e, setSelectedItem);
   };
 
   const handleSubmit = async () => {
@@ -120,12 +138,59 @@ const FryerStation = () => {
     }
   };
 
-  const filteredInventory = inventory.filter(item => {
-    const itemMonth = new Date(item.date).getMonth();
-    const itemDate = item.date.toLowerCase();
-    const itemYear = new Date(item.date).getFullYear();
-    return itemYear === currentYear && itemMonth === currentMonth && itemDate;
-  });
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedItem(null);
+  };
+
+  const handleEditSubmit = async (selectedItem) => {
+    const itemId = selectedItem._id;
+    const itemToEdit = inventory.find(item => item._id === itemId);
+
+    if (!itemToEdit) {
+      throw new Error('Item not found in inventory');
+    }
+
+    const updatedItemToEdit = {
+      ...itemToEdit,
+      ...selectedItem
+    };
+
+    const token = getToken();
+
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const response = await updateFryerData(updatedItemToEdit._id, updatedItemToEdit, token);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const updatedItem = await response.json();
+      const updatedInventory = inventory.map(item => item._id === updatedItem._id ? updatedItem : item);
+      setInventory(updatedInventory);
+
+      handleCloseEditModal();
+    } catch (error) {
+      console.error('Error updating item:', error);
+    }
+  };
+
+  const handleEditItem = (item) => {
+    setSelectedItem({
+      _id: item._id,
+      date: item.date,
+      chickenThighs: { ...item.chickenThighs },
+      chickenKarage: { ...item.chickenKarage },
+      chickenWings: item.chickenWings,
+      hotDogs: { ...item.hotDogs },
+      vegDogs: { ...item.vegDogs },
+    });
+    setShowEditModal(true);
+  };
 
   const handlePreviousMonth = () => {
     setCurrentMonth(prevMonth => {
@@ -134,8 +199,6 @@ const FryerStation = () => {
       setCurrentYear(newYear);
       return newMonth;
     });
-    setSearchQuery('');
-    setIsEditMode(false);
   };
 
   const handleNextMonth = () => {
@@ -150,8 +213,6 @@ const FryerStation = () => {
 
     setCurrentMonth(nextMonth);
     setCurrentYear(nextYear);
-    setSearchQuery('');
-    setIsEditMode(false);
   };
 
   const isNextMonthDisabled = () => {
@@ -169,6 +230,7 @@ const FryerStation = () => {
 
   const handleShowModal = () => {
     setShowModal(true);
+    setSelectedItem(null);
   };
 
   if (!userDataLength) {
@@ -181,7 +243,6 @@ const FryerStation = () => {
         <h2 className='text-center card title-card bg-primary text-light'>Fryer</h2>
       </div>
       <div className='mx-2'>
-
         <div className="d-flex justify-content-between">
           <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
           <button className='btn btn-success' onClick={handleShowModal}>Add</button>
@@ -201,31 +262,31 @@ const FryerStation = () => {
               {filteredInventory
                 .slice().reverse().map(item => (
                   <React.Fragment key={item._id}>
-                    <tr className='first-row'>
+                    <tr className='first-row' onClick={() => handleEditItem(item)}>
                       <td className='first-row'>{formatDateDisplay(item.date)}</td>
                       <td className='border-end'>Chicken Thighs</td>
                       <td className='border-end'>{item.chickenThighs.onLine}</td>
                       <td>{item.chickenThighs.frozen}</td>
                     </tr>
-                    <tr className='first-row'>
+                    <tr className='first-row' onClick={() => handleEditItem(item)}>
                       <td className='border-top'></td>
                       <td className='border-top border-end'>Chicken Karage</td>
                       <td className='border-top border-end'>{item.chickenKarage.onLine}</td>
                       <td className='border-top'>{item.chickenKarage.frozen}</td>
                     </tr>
-                    <tr className='first-row'>
+                    <tr className='first-row' onClick={() => handleEditItem(item)}>
                       <td className='border-top'></td>
                       <td className='border-top border-end'>Chicken Wings</td>
                       <td className='border-top border-end'>{item.chickenWings}</td>
                       <td className='border-top'></td>
                     </tr>
-                    <tr className='first-row'>
+                    <tr className='first-row' onClick={() => handleEditItem(item)}>
                       <td className='border-top'></td>
                       <td className='border-top border-end'>Hot Dogs</td>
                       <td className='border-top border-end'>{item.hotDogs.onLine}</td>
                       <td className='border-top'>{item.hotDogs.frozen}</td>
                     </tr>
-                    <tr className='first-row'>
+                    <tr className='first-row' onClick={() => handleEditItem(item)}>
                       <td className='border-top'></td>
                       <td className='border-top border-end'>Veggie Dogs</td>
                       <td className='border-top border-end'>{item.vegDogs.onLine}</td>
@@ -244,6 +305,15 @@ const FryerStation = () => {
         handleSubmit={handleSubmit}
         newItem={newItem}
       />
+      {selectedItem && (
+        <EditFryerEntryModal
+          showModal={showEditModal}
+          handleCloseModal={handleCloseEditModal}
+          handleChange={handleEditChange}
+          handleEditSubmit={handleEditSubmit}
+          selectedItem={selectedItem}
+        />
+      )}
     </div>
   );
 };
