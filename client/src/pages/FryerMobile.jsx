@@ -12,20 +12,23 @@ import '../styles/styles.css';
 import '../styles/Input.css';
 
 const FryerStation = () => {
-  const [userData, setUserData] = useState({});
-  const [inventory, setInventory] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [newItem, setNewItem] = useState({
+  const initialNewItemState = {
     date: formatDate(Date.now()),
     chickenThighs: { onLine: '', frozen: '' },
     chickenKarage: { onLine: '', frozen: '' },
     chickenWings: '',
     hotDogs: { onLine: '', frozen: '' },
     vegDogs: { onLine: '', frozen: '' }
-  });
+  };
+
+  const [userData, setUserData] = useState({});
+  const [inventory, setInventory] = useState([]);
+  const [newItem, setNewItem] = useState(initialNewItemState);
+  const [editItem, setEditItem] = useState(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const filteredInventory = inventory.filter(item => {
     const itemMonth = new Date(item.date).getMonth();
@@ -33,51 +36,51 @@ const FryerStation = () => {
     return itemYear === currentYear && itemMonth === currentMonth
   });
 
-  const [selectedItem, setSelectedItem] = useState(null);
-
   const userDataLength = Object.keys(userData).length;
 
-  const getToken = () => Auth.loggedIn() ? Auth.getToken() : null;
-
   useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const token = getToken();
-
-        if (!token) {
-          return false;
-        }
-
-        const response = await getMe(token);
-
-        if (!response.ok) {
-          throw new Error('something went wrong!');
-        }
-
-        const user = await response.json();
-        setUserData(user);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     getUserData();
   }, [userDataLength]);
 
   useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const response = await getFryerData();
-
-        const data = await response.json();
-        setInventory(data);
-      } catch (error) {
-        console.error('Error fetching inventory:', error);
-      }
-    };
-
     fetchInventory();
-  }, [currentMonth]);
+  }, []);
+
+  const getToken = () => Auth.loggedIn() ? Auth.getToken() : null;
+
+  const getUserData = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return false;
+      }
+
+      const response = await getMe(token);
+      if (!response.ok) {
+        throw new Error('Something went wrong!');
+      }
+
+      const user = await response.json();
+      setUserData(user);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchInventory = async () => {
+    try {
+      const response = await getFryerData();
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setInventory(data);
+    } catch (error) {
+      console.error('Error fetching inventory:', error);
+    }
+  };
 
   const handleInputChange = (e, setStateFunction) => {
     const { name, value } = e.target;
@@ -104,7 +107,7 @@ const FryerStation = () => {
   };
 
   const handleEditChange = (e) => {
-    handleInputChange(e, setSelectedItem);
+    handleInputChange(e, setEditItem);
   };
 
   const handleSubmit = async () => {
@@ -123,15 +126,6 @@ const FryerStation = () => {
 
       const data = await response.json();
       setInventory([...inventory, data]);
-      setNewItem({
-        date: formatDate(Date.now()),
-        chickenThighs: { onLine: '', frozen: '' },
-        chickenKarage: { onLine: '', frozen: '' },
-        chickenWings: '',
-        hotDogs: { onLine: '', frozen: '' },
-        vegDogs: { onLine: '', frozen: '' }
-      });
-
       handleCloseModal();
     } catch (error) {
       console.error('Error adding new item:', error);
@@ -140,11 +134,11 @@ const FryerStation = () => {
 
   const handleCloseEditModal = () => {
     setShowEditModal(false);
-    setSelectedItem(null);
+    setEditItem(null);
   };
 
-  const handleEditSubmit = async (selectedItem) => {
-    const itemId = selectedItem._id;
+  const handleEditSubmit = async (editItem) => {
+    const itemId = editItem._id;
     const itemToEdit = inventory.find(item => item._id === itemId);
 
     if (!itemToEdit) {
@@ -153,7 +147,7 @@ const FryerStation = () => {
 
     const updatedItemToEdit = {
       ...itemToEdit,
-      ...selectedItem
+      ...editItem
     };
 
     const token = getToken();
@@ -180,7 +174,7 @@ const FryerStation = () => {
   };
 
   const handleEditItem = (item) => {
-    setSelectedItem({
+    setEditItem({
       _id: item._id,
       date: item.date,
       chickenThighs: { ...item.chickenThighs },
@@ -230,7 +224,7 @@ const FryerStation = () => {
 
   const handleShowModal = () => {
     setShowModal(true);
-    setSelectedItem(null);
+    setEditItem(null);
   };
 
   if (!userDataLength) {
@@ -305,13 +299,13 @@ const FryerStation = () => {
         handleSubmit={handleSubmit}
         newItem={newItem}
       />
-      {selectedItem && (
+      {editItem && (
         <EditFryerEntryModal
           showModal={showEditModal}
           handleCloseModal={handleCloseEditModal}
           handleChange={handleEditChange}
           handleEditSubmit={handleEditSubmit}
-          selectedItem={selectedItem}
+          editItem={editItem}
         />
       )}
     </div>
