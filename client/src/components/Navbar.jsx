@@ -39,9 +39,6 @@ const AppNavbar = () => {
                   <Nav.Link as={Link} to='/fryer' onClick={handleNavLinkClick}>
                     Fryer
                   </Nav.Link>
-                  <Nav.Link as={Link} to='/fryermobile' onClick={handleNavLinkClick}>
-                    Fryer Mobile
-                  </Nav.Link>
                   <Nav.Link as={Link} to='/grill' onClick={handleNavLinkClick}>
                     Grill
                   </Nav.Link>

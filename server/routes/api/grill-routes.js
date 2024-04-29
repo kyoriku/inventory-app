@@ -7,17 +7,19 @@ const {
   deleteGrill
 } = require('../../controllers/grill-controller');
 
+const { authMiddleware } = require('../../utils/auth');
+
 // Set up GET all and POST at /api/grills
 router
   .route('/')
   .get(getAllGrill)
-  .post(createGrill);
+  .post(authMiddleware, createGrill);
 
 // Set up GET one, PUT, and DELETE at /api/grills/:id
 router
   .route('/:id')
   .get(getOneGrill)
-  .put(updateGrill)
-  .delete(deleteGrill);
+  .put(authMiddleware, updateGrill)
+  .delete(authMiddleware, deleteGrill);
 
 module.exports = router;

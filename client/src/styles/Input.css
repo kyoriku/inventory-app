@@ -1,4 +1,9 @@
 .half-width-input {
-  width: 55px;
+  width: 52px;
+  display: inline-block
+}
+
+.small-input {
+  width: 65px;
   display: inline-block
 }

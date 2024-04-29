@@ -48,17 +48,6 @@ export const saveFryerData = (newItem, token) => {
 };
 
 // update fryer data
-// export const updateFryerData = (newItem, token) => {
-//   return fetch('/api/fryer', {
-//     method: 'PUT',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       authorization: `Bearer ${token}`,
-//     },
-//     body: JSON.stringify(newItem),
-//   });
-// };
-
 export const updateFryerData = (itemId, newItem, token) => {
   return fetch(`/api/fryer/${itemId}`, {
     method: 'PUT',
@@ -99,8 +88,8 @@ export const saveGrillData = (newItem, token) => {
 };
 
 // update grill data
-export const updateGrillData = (newItem, token) => {
-  return fetch('/api/grill', {
+export const updateGrillData = (itemId, newItem, token) => {
+  return fetch(`/api/grill/${itemId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

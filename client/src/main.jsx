@@ -8,7 +8,6 @@ import App from './App.jsx'
 import LoginPage from './pages/Login.jsx';
 import Homepage from './pages/Home.jsx'
 import FryerStation from './pages/Fryer.jsx'
-import FryerStationMobile from './pages/FryerMobile.jsx'
 import GrillStation from './pages/Grill.jsx'
 import ErrorPage from './pages/ErrorPage';
 
@@ -36,17 +35,6 @@ const router = createBrowserRouter([
       {
         path: '/fryer',
         element: <FryerStation />,
-        loader: async () => {
-          const isLoggedIn = Auth.loggedIn();
-          if (!isLoggedIn) {
-            return redirect('/');
-          }
-          return null;
-        }
-      },
-      {
-        path: '/fryermobile',
-        element: <FryerStationMobile />,
         loader: async () => {
           const isLoggedIn = Auth.loggedIn();
           if (!isLoggedIn) {

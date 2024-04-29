@@ -6,11 +6,11 @@ const fryerController = {
     try {
       const fryerData = await Fryer.find();
       res.json(fryerData);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
     }
-  },
+  },  
   
   // get one fryer data by id
   async getOneFryer({ params }, res) {
@@ -21,9 +21,9 @@ const fryerController = {
         return;
       }
       res.json(fryerData);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
     }
   },
 
@@ -31,34 +31,34 @@ const fryerController = {
   async createFryer({ body }, res) {
     try {
       const fryerData = await Fryer.create(body);
+      // console.log(body)
       res.json(fryerData);
-    } catch (err) {
-      console.log(err);
-      res.status(400).json(err);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
     }
   },
 
   // update fryer data by id
   async updateFryer(req, res) {
     try {
-      // Fetch the existing fryer data
-      const existingFryerData = await Fryer.findOneAndUpdate(
+      const fryerData = await Fryer.findOneAndUpdate(
         { _id: req.params.id }, // Filter by fryer ID
         { $set: req.body }, // Update with the data provided in the request body
         { new: true, runValidators: true } // Options: return the modified document, run schema validators
       );
   
       // Checking if fryer data exists
-      if (!existingFryerData) {
+      if (!fryerData) {
         return res.status(404).json({ message: 'No fryer data found with this id!' });
       }
   
       // Sending the updated fryer data as a JSON response
-      res.json(existingFryerData);
-    } catch (err) {
+      res.json(fryerData);
+    } catch (error) {
       // Handling any errors that occur, logging them, and sending a 500 status code along with the error message
-      console.error(err);
-      res.status(500).json(err);
+      console.error(error);
+      res.status(500).json(error);
     }
   },  
 
@@ -71,9 +71,9 @@ const fryerController = {
         return;
       }
       res.json(fryerData);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   },
 };
