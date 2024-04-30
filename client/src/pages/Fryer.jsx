@@ -286,7 +286,7 @@ const FryerStation = () => {
     }
 
     try {
-      const response = await saveFryerData(newItem);
+      const response = await saveFryerData(newItem, token);
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -496,7 +496,7 @@ const FryerStation = () => {
               <tr
                 key={item._id}
                 onClick={() => handleRowClick(item._id)}
-                className={selectedItemId === item._id ? 'selected-row' : ''}
+                className={selectedItemId === item._id ? 'selected-row table-secondary border-dark' : ''}
               >
                 <td className='table-secondary border-dark'>
                   {isEditMode && editingItemId === item._id ? (
