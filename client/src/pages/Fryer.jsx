@@ -277,7 +277,7 @@ const FryerStation = () => {
     );
   };
 
-  
+
   const handleSubmit = async () => {
     const token = getToken();
 
@@ -363,6 +363,18 @@ const FryerStation = () => {
     setEditItem(null);
   };
 
+  const isFormFilled = () => {
+    const { chickenThighs, chickenKarage, chickenWings, hotDogs, vegDogs } = newItem;
+
+    return (
+      chickenThighs.onLine.trim() !== '' && chickenThighs.frozen.trim() !== '' &&
+      chickenKarage.onLine.trim() !== '' && chickenKarage.frozen.trim() !== '' &&
+      chickenWings.trim() !== '' &&
+      hotDogs.onLine.trim() !== '' && hotDogs.frozen.trim() !== '' &&
+      vegDogs.onLine.trim() !== '' && vegDogs.frozen.trim() !== ''
+    );
+  };
+
   if (!userDataLength) {
     return <LoadingSpinner />;
   };
@@ -371,7 +383,7 @@ const FryerStation = () => {
     return (
       <div className='pt-2 background d-flex flex-column '>
         <div className='d-flex justify-content-center'>
-          <h2 className='text-center card title-card bg-dark text-light'>Fryer</h2>
+          <h4 className='text-center card title-card bg-dark text-light'>Fryer</h4>
         </div>
         <div className='mx-2'>
           <div className="d-flex justify-content-between">
@@ -452,15 +464,13 @@ const FryerStation = () => {
   return (
     <div className='pt-2 background'>
       <div className='d-flex justify-content-center'>
-        <h2 className='text-center card title-card bg-dark text-light'>Fryer</h2>
+        <h4 className='text-center card title-card bg-dark text-light'>Fryer</h4>
       </div>
       <div className='mx-2'>
         <div className="d-flex justify-content-between">
-          <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
+          <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8678; Prev Month</button>
           <SearchBar value={searchQuery} onChange={handleSearchChange} />
-          <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>
-            Next Month &#8594;
-          </button>
+          <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8680;</button>
         </div>
         <table className='mt-2 m-0 table table-bordered border-dark table-hover box'>
           <thead>
@@ -648,14 +658,15 @@ const FryerStation = () => {
           </tbody>
         </table>
       </div>
-      {isEditMode ? (
+      {!isEditMode && isFormFilled() && (
         <div className="text-center m-2">
-          <button className='btn btn-danger btn-lg me-1 mb-3' onClick={handleCancelEdit}>Cancel</button>
-          <button className='btn btn-success btn-lg ms-1 mb-3' onClick={handleSaveOrUpdate}>Update</button>
+          <button className='btn btn-success mb-3' onClick={handleSaveOrUpdate}>Save</button>
         </div>
-      ) : (
+      )}
+      {isEditMode && (
         <div className="text-center m-2">
-          <button className='btn btn-success btn-lg  mb-3' onClick={handleSaveOrUpdate}>Save</button>
+          <button className='btn btn-danger me-1 mb-3' onClick={handleCancelEdit}>Cancel</button>
+          <button className='btn btn-success ms-1 mb-3' onClick={handleSaveOrUpdate}>Update</button>
         </div>
       )}
     </div>

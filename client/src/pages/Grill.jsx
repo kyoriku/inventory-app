@@ -378,6 +378,23 @@ const GrillStation = () => {
     setEditItem(null);
   };
 
+  const isFormFilled = () => {
+    const { burgers, clubChicken, beerCanChicken, vegBurgers, sourdough, sesameBuns, hoagieBuns, turkey, halloumi } = newItem;
+
+    return (
+      burgers.onLine.trim() !== '' && burgers.frozen.trim() !== '' &&
+      clubChicken.onLine.trim() !== '' && clubChicken.frozen.trim() !== '' &&
+      beerCanChicken.onLine.trim() !== '' && beerCanChicken.frozen.trim() !== '' &&
+      vegBurgers.onLine.trim() !== '' && vegBurgers.frozen.trim() !== '' &&
+      sourdough.trim() !== '' &&
+      sesameBuns.trim() !== '' &&
+      hoagieBuns.trim() !== '' &&
+      turkey.onLine.trim() !== '' && turkey.frozen.trim() !== '' &&
+      halloumi.trim() !== ''
+    );
+  };
+
+
   if (!userDataLength) {
     return <LoadingSpinner />;
   };
@@ -386,13 +403,13 @@ const GrillStation = () => {
     return (
       <div className='pt-2 background d-flex flex-column '>
         <div className='d-flex justify-content-center'>
-          <h2 className='text-center card title-card bg-dark text-light'>Grill</h2>
+          <h4 className='text-center card title-card bg-dark text-light'>Grill</h4>
         </div>
         <div className='mx-2'>
           <div className="d-flex justify-content-between">
-            <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
+            <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8678; Prev Month</button>
             <button className='btn btn-success' onClick={handleShowModal}>Add</button>
-            <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8594;</button>
+            <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8680;</button>
           </div>
           <div className='mt-2'>
             <table className='table table-bordered table-hover border-dark'>
@@ -491,15 +508,13 @@ const GrillStation = () => {
   return (
     <div className='pt-2 background'>
       <div className='d-flex justify-content-center'>
-        <h2 className='text-center card title-card bg-dark text-light'>Grill</h2>
+        <h4 className='text-center card title-card bg-dark text-light'>Grill</h4>
       </div>
       <div className='mx-2'>
         <div className="d-flex justify-content-between">
-          <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
+          <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8678; Prev Month</button>
           <SearchBar value={searchQuery} onChange={handleSearchChange} />
-          <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>
-            Next Month &#8594;
-          </button>
+          <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8680;</button>
         </div>
         <table className='mt-2 m-0 table table-bordered border-dark table-hover box'>
           <thead>
@@ -734,7 +749,7 @@ const GrillStation = () => {
                   value={newItem.sourdough}
                   onChange={handleChange}
                   className="form-control small-input"
-                  placeholder='Total'                />
+                  placeholder='Total' />
               </td>
               <td>
                 <input
@@ -743,7 +758,7 @@ const GrillStation = () => {
                   value={newItem.sesameBuns}
                   onChange={handleChange}
                   className="form-control small-input"
-                  placeholder='Total'                />
+                  placeholder='Total' />
               </td>
               <td>
                 <input
@@ -752,7 +767,7 @@ const GrillStation = () => {
                   value={newItem.hoagieBuns}
                   onChange={handleChange}
                   className="form-control small-input"
-                  placeholder='Total'                />
+                  placeholder='Total' />
               </td>
               <td>
                 <input
@@ -787,14 +802,15 @@ const GrillStation = () => {
           </tbody>
         </table>
       </div>
-      {isEditMode ? (
+      {!isEditMode && isFormFilled() && (
         <div className="text-center m-2">
-          <button className='btn btn-danger btn-lg me-1 mb-3' onClick={handleCancelEdit}>Cancel</button>
-          <button className='btn btn-success btn-lg ms-1 mb-3' onClick={handleSaveOrUpdate}>Update</button>
+          <button className='btn btn-success mb-3' onClick={handleSaveOrUpdate}>Save</button>
         </div>
-      ) : (
+      )}
+      {isEditMode && (
         <div className="text-center m-2">
-          <button className='btn btn-success btn-lg  mb-3' onClick={handleSaveOrUpdate}>Save</button>
+          <button className='btn btn-danger me-1 mb-3' onClick={handleCancelEdit}>Cancel</button>
+          <button className='btn btn-success ms-1 mb-3' onClick={handleSaveOrUpdate}>Update</button>
         </div>
       )}
     </div>
