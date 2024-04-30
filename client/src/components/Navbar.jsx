@@ -24,13 +24,12 @@ const AppNavbar = () => {
     <>
       <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
         <Container fluid>
-          <Navbar.Brand as={Link} to='/'>
-            Eastbound Counts
-          </Navbar.Brand>
+            <Navbar.Brand as={Link} to='/home'>
+              Eastbound Counts
+            </Navbar.Brand>
           <Navbar.Toggle aria-controls='responsive-navbar-nav' />
           <Navbar.Collapse id='respsonive-navbar-nav' className='justify-content-end'>
             <Nav className='ml-auto text-end'>
-              {/* Conditionally render Fryer and Grill links */}
               {Auth.loggedIn() && (
                 <>
                   <Nav.Link as={Link} to='/home' onClick={handleNavLinkClick}>
@@ -44,7 +43,6 @@ const AppNavbar = () => {
                   </Nav.Link>
                 </>
               )}
-              {/* if user is logged in show saved books and logout */}
               {Auth.loggedIn() ? (
                 <>
                   <Nav.Link onClick={Auth.logout}>Logout</Nav.Link>
