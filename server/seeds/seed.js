@@ -5,7 +5,7 @@ const fryerData = require('./fryerData'); // Import fryer seed data
 const grillData = require('./grillData'); // Import grill seed data
 
 // Connection URI
-const uri = 'mongodb://localhost:27017/counts'; // Update with your MongoDB connection string and database name
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/counts'; // Use the MONGODB_URI environment variable
 
 async function seedDatabase() {
   // Connect to MongoDB
