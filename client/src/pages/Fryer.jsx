@@ -387,9 +387,9 @@ const FryerStation = () => {
         </div>
         <div className='mx-2'>
           <div className="d-flex justify-content-between">
-            <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8592; Prev Month</button>
+            <button className='btn btn-primary' onClick={handlePreviousMonth}>&#8678; Prev Month</button>
             <button className='btn btn-success' onClick={handleShowModal}>Add</button>
-            <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8594;</button>
+            <button className='btn btn-primary' onClick={handleNextMonth} disabled={isNextMonthDisabled()}>Next Month &#8680;</button>
           </div>
           <div className='mt-2'>
             <table className='table table-bordered table-hover border-dark'>
